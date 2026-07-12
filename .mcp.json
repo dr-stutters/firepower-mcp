@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "fmc": {
+      "command": "uv",
+      "args": ["run", "fmc-mcp"]
+    }
+  }
+}

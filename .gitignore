@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+dist/
+build/
+*.egg-info/
+# cached API Explorer spec
+.fmc_spec_cache.json
