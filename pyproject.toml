@@ -12,9 +12,25 @@ dependencies = [
 [project.scripts]
 fmc-mcp = "fmc_mcp.server:main"
 
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.15.21",
+]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/fmc_mcp"]
+
+[tool.pytest.ini_options]
+# Only collect the FMC-free unit tests (test_*.py). The live smoke suite is
+# smoke_test.py and is run directly.
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+filterwarnings = ["ignore::ResourceWarning"]
+
+[tool.ruff]
+line-length = 100
