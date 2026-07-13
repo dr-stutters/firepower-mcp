@@ -12,6 +12,9 @@ in seconds instead of guessing.
 
 ## What it can do
 
+**51 tools** across devices, deploy, interfaces/VPN, routing, HA, policies, and
+system — plus spec search and a generic escape hatch:
+
 - **Devices** — list / get / register / delete FTDs, health roll-up
 - **Deploy** — list deployable devices; deploy pending config and poll to done
 - **Interfaces** — physical interfaces (ifname/IP/zone), VTIs (incl.
