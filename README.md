@@ -35,25 +35,45 @@ system — plus spec search and a generic escape hatch:
 - Python ≥ 3.11 and [uv](https://docs.astral.sh/uv/)
 - Reachable FMC with API access (an admin/API user)
 
-## Setup
+## Install
 
 ```bash
-cp .env.example .env       # set FMC_URL / FMC_USERNAME / FMC_PASSWORD
-uv run fmc-mcp             # starts the stdio MCP server
-uv run python tests/smoke_test.py   # read-only sanity check against your FMC
+git clone https://github.com/dr-stutters/firepower-mcp
+cd firepower-mcp && uv sync
 ```
 
-`.env` keys: `FMC_URL`, `FMC_USERNAME`, `FMC_PASSWORD`, `FMC_DOMAIN` (default
+## Configure
+
+Copy `.env.example` to `.env` (gitignored) and point it at your FMC:
+
+`FMC_URL`, `FMC_USERNAME`, `FMC_PASSWORD`, `FMC_DOMAIN` (default
 `Global`), `FMC_VERIFY_SSL` (default `false`), `FMC_TIMEOUT` (default `60`).
 
-## Connecting an MCP client
+## How to use this
 
-The included [.mcp.json](.mcp.json) registers the server as `fmc`. In Claude Code,
-start it inside this repo, or add to your client config:
+Run standalone (stdio): `uv run fmc-mcp` — the included [.mcp.json](.mcp.json)
+registers it as `fmc` in Claude Code when started inside this repo, or add it to
+any MCP client:
 
 ```json
 { "mcpServers": { "fmc": { "command": "uv", "args": ["run", "fmc-mcp"] } } }
 ```
+
+It's built to be driven by an AI agent. In the
+[cml-mcp](https://github.com/dr-stutters/cml-mcp) lab suite it's wired in as the
+`fmc` server, owned by the **firewall-engineer** agent (tool prefix `mcp__fmc__*`)
+— FMC/FTD work in lab requests fans out to it automatically. Standalone, just
+describe what you want:
+
+> "Register the FTD at 198.18.128.23 with reg key cisco123key and deploy."
+
+> "Build a hub-and-spoke SD-WAN auto-VPN topology from NYC to the three branches."
+
+> "Pair these two FTDs into HA and show me the failover state."
+
+Start with `fmc_server_version` to confirm reachability, and reach for
+`fmc_search_spec` + `fmc_get_definition` before hand-writing any request body —
+the FMC API is schema-driven and the spec search knows every endpoint.
 
 ## How it works
 
@@ -65,6 +85,19 @@ returned by the `list` tools; after config changes, `fmc_deploy` the devices.
 
 The FMC config API is enormous and schema-driven — reach for `fmc_search_spec` +
 `fmc_get_definition` before hand-writing any complex body.
+
+## Test
+
+```bash
+uv run pytest                         # unit tests - no FMC needed (run in CI)
+uv run python tests/smoke_test.py     # read-only sanity check against your FMC
+```
+
+Unit tests mock the HTTP layer (header-based token auth, domain scoping, error
+extraction); `ruff` + `pytest` run in CI on every push. The live validation
+lives in the CML lab suite: FMC-managed registration, HA pairing, and the full
+Secure Firewall SD-WAN CVD (auto-VPN overlay, ECMP, dual hub) were all driven
+end-to-end through these tools.
 
 ## Roadmap
 
