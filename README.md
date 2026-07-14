@@ -71,6 +71,9 @@ describe what you want:
 
 > "Pair these two FTDs into HA and show me the failover state."
 
+See **[EXAMPLE_PROMPT.md](EXAMPLE_PROMPT.md)** for a full end-to-end scenario plus
+focused per-area prompts (register/deploy, interfaces/VTI, SD-WAN, routing, HA).
+
 Start with `fmc_server_version` to confirm reachability, and reach for
 `fmc_search_spec` + `fmc_get_definition` before hand-writing any request body —
 the FMC API is schema-driven and the spec search knows every endpoint.
