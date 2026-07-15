@@ -46,6 +46,8 @@ cd firepower-mcp && uv sync
 
 Copy `.env.example` to `.env` (gitignored) and point it at your FMC:
 
+> **Suite users:** these values can instead live in a shared `../.env` one level above the repos, read by every companion MCP — precedence: process env > this repo's `.env` > the shared `../.env`. See the [cml-mcp](https://github.com/dr-stutters/cml-mcp) hub.
+
 `FMC_URL`, `FMC_USERNAME`, `FMC_PASSWORD`, `FMC_DOMAIN` (default
 `Global`), `FMC_VERIFY_SSL` (default `false`), `FMC_TIMEOUT` (default `60`).
 
