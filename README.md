@@ -87,6 +87,12 @@ end-to-end (see the [suite integration map](https://github.com/dr-stutters/cml-m
   **user↔IP sessions** (**passive identity** — the FTD then blocks/permits by AD user/group).
   Requires a **pxGrid client cert with `clientAuth` EKU** signed by the enterprise CA, plus
   DNS resolution of the ISE FQDN.
+- **FMC → ISE — Rapid Threat Containment** (with ise-mcp) — an FMC **correlation rule** +
+  **pxGrid ANC remediation** *auto-applies an ISE ANC quarantine* to the offending endpoint over
+  **pxGrid EPS**, so ISE fires a CoA that bounces its fabric session — no human in the loop.
+  Unlock: FMC's pxGrid client must be a member of ISE's **`ANC`** pxGrid client-group (Session
+  Directory access is open; ANC needs the group). Proven live end-to-end (a blocked FTD event →
+  auto-quarantine).
 - **Windows AD → FMC realm** (with [windows-mcp](https://github.com/dr-stutters/windows-mcp))
   — an LDAP realm to DC01 supplies the AD user/group objects passive-identity rules match on.
 - **Windows AD CS → FMC** (with windows-mcp) — the same MitchcloudCA that signs ISE's certs
