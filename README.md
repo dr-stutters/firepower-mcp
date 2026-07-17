@@ -76,6 +76,30 @@ describe what you want:
 See **[EXAMPLE_PROMPT.md](EXAMPLE_PROMPT.md)** for a full end-to-end scenario plus
 focused per-area prompts (register/deploy, interfaces/VTI, SD-WAN, routing, HA).
 
+## In the suite — FMC's integration points
+
+FMC is the firewall control point that the other stacks feed and consume. In the
+[cml-mcp](https://github.com/dr-stutters/cml-mcp) suite these edges are built and validated
+end-to-end (see the [suite integration map](https://github.com/dr-stutters/cml-mcp#suite-integration-map)):
+
+- **ISE → FMC over pxGrid** (with [ise-mcp](https://github.com/dr-stutters/ise-mcp)) — FMC
+  joins ISE's pxGrid as a consumer and learns **SGTs** (SGT-aware ACP rules) *and* live
+  **user↔IP sessions** (**passive identity** — the FTD then blocks/permits by AD user/group).
+  Requires a **pxGrid client cert with `clientAuth` EKU** signed by the enterprise CA, plus
+  DNS resolution of the ISE FQDN.
+- **Windows AD → FMC realm** (with [windows-mcp](https://github.com/dr-stutters/windows-mcp))
+  — an LDAP realm to DC01 supplies the AD user/group objects passive-identity rules match on.
+- **Windows AD CS → FMC** (with windows-mcp) — the same MitchcloudCA that signs ISE's certs
+  signs FMC's pxGrid client cert (`win_sign_csr`).
+- **FTD → Splunk** (with [splunk-mcp](https://github.com/dr-stutters/splunk-mcp)) — LINA
+  syslog (UDP 514, out the data interface) forwards firewall connection + IPS events to the SIEM.
+- **FTD inline in the SD-Access fabric** (with cml-mcp) — inserted at the fusion for live
+  permit/deny enforcement on fabric traffic.
+
+> Config note: FMC's pxGrid **identity source** and the **identity-policy→ACP** association are
+> **GUI-only** (not in the FMC REST API); this server drives everything the API *does* expose.
+> The reusable pxGrid + passive-identity recipes are in the cml-mcp `Custom Designs` modules.
+
 Start with `fmc_server_version` to confirm reachability, and reach for
 `fmc_search_spec` + `fmc_get_definition` before hand-writing any request body —
 the FMC API is schema-driven and the spec search knows every endpoint.
